@@ -1,5 +1,12 @@
 /** @import { GameData, Character } from '../../gamedata_typedefs.js' */
 
+const hasHeldCourtOrCouncilPosition = (character) => {
+  const positions = typeof character?.heldCourtAndCouncilPositions === "string"
+    ? character.heldCourtAndCouncilPositions.trim()
+    : "";
+  return positions.length > 0 && !["none", "no", "n/a"].includes(positions.toLowerCase());
+};
+
 // [MODIFIED BY AI - AUH COMPATIBILITY]
 // Note to original author: This file was modified to support the All Under Heaven (AUH) DLC's Administrative Government.
 // The runGameEffect logic now checks if the target uses Celestial Empires (`tgp_has_access_to_ministry_trigger = yes`).
@@ -37,11 +44,16 @@ module.exports = {
    * @param {Character} params.sourceCharacter
    */
   check: ({ gameData, sourceCharacter }) => {
-    // Can be fired from any character's council except own
     const allIds = Array.from(gameData.characters.keys());
-    const validTargets = allIds.filter((id) => id !== sourceCharacter.id);
+    const sourceHasOffice = hasHeldCourtOrCouncilPosition(sourceCharacter);
+    const validTargets = sourceHasOffice
+      ? allIds.filter((id) => {
+          const char = gameData.characters.get(id);
+          return char && char.isLandedRuler && id !== sourceCharacter.id;
+        })
+      : [];
     return {
-      canExecute: true,
+      canExecute: validTargets.length > 0,
       validTargetCharacterIds: validTargets,
     };
   },
@@ -73,6 +85,32 @@ module.exports = {
       };
     }
 
+    if (!targetCharacter.isLandedRuler) {
+      return {
+        message: {
+          en: `Failed: ${targetCharacter.shortName} is not a landed ruler and cannot have a council`,
+          ru: `ÐžÑˆÐ¸Ð±ÐºÐ°: ${targetCharacter.shortName} Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð·ÐµÐ¼Ð»ÐµÐ²Ð»Ð°Ð´ÐµÐ»ÑŒÑ†ÐµÐ¼ Ð¸ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð¸Ð¼ÐµÑ‚ÑŒ ÑÐ¾Ð²ÐµÑ‚`,
+          fr: `Ã‰chec : ${targetCharacter.shortName} n'est pas un dirigeant terrien et ne peut pas avoir de conseil`,
+          de: `Fehler: ${targetCharacter.shortName} ist kein Landesherrscher und kann keinen Rat haben`,
+          es: `Error: ${targetCharacter.shortName} no es un gobernante con tierras y no puede tener consejo`,
+          ja: `å¤±æ•—: ${targetCharacter.shortName}ã¯é ˜ä¸»ã§ã¯ãªãã€è©•è­°ä¼šã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“`,
+          ko: `ì‹¤íŒ¨: ${targetCharacter.shortName}ì€(ëŠ”) ì˜ì£¼ê°€ ì•„ë‹ˆë©° í‰ì˜íšŒë¥¼ ê°€ì§ˆ ìˆ˜ ì—†ìŠµë‹ˆë‹¤`,
+          pl: `Niepowodzenie: ${targetCharacter.shortName} nie jest wÅ‚adcÄ… lÄ…dowym i nie moÅ¼e mieÄ‡ rady`,
+          zh: `å¤±è´¥: ${targetCharacter.shortName}æ²¡æœ‰å°åœ°ï¼Œæ— æ³•æ‹¥æœ‰å†…é˜`
+        },
+        sentiment: 'negative'
+      };
+    }
+
+    if (!hasHeldCourtOrCouncilPosition(sourceCharacter)) {
+      return {
+        message: {
+          en: `Failed: ${sourceCharacter.shortName} has no logged court or council office to remove`,
+        },
+        sentiment: 'negative'
+      };
+    }
+
     runGameEffect(`
 global_var:votc_action_target = {
     save_scope_as = councillor_liege
@@ -84,7 +122,14 @@ global_var:votc_action_target = {
             destroy_held_ministry_titles_effect = yes
         }
     }
-    fire_councillor = global_var:votc_action_source 
+    if = {
+        limit = {
+            global_var:votc_action_source = {
+                is_councillor_of = scope:councillor_liege
+            }
+        }
+        fire_councillor = global_var:votc_action_source
+    }
 }`);
 
     return {

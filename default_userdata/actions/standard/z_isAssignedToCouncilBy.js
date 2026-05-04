@@ -168,8 +168,21 @@ module.exports = {
       "minister_grand_marshal": "e_minister_grand_marshal"
     };
 
+    const councilEligibilityTriggerMap = {
+      "chancellor": "can_be_chancellor_trigger",
+      "steward": "can_be_steward_trigger",
+      "marshal": "can_be_marshal_trigger",
+      "spymaster": "can_be_spymaster_trigger",
+      "court_chaplain": "can_be_court_chaplain_trigger",
+      "minister_works": "tgp_can_be_a_minister_trigger",
+      "minister_justice": "tgp_can_be_a_minister_trigger",
+      "minister_personnel": "tgp_can_be_a_minister_trigger",
+      "minister_grand_marshal": "tgp_can_be_a_minister_trigger"
+    };
+
     const councillorType = positionMap[position];
     const councillorTitleRole = positionTitleMap[position];
+    const councilEligibilityTrigger = councilEligibilityTriggerMap[position];
     const positionZh = COUNCIL_POSITION_ZH[position] || position;
 
     if (!isPlayerSource) {
@@ -179,12 +192,20 @@ global_var:votc_action_target = {
     if = {
         limit = {
             tgp_has_access_to_ministry_trigger = yes
+            global_var:votc_action_source = {
+                tgp_can_be_a_minister_trigger = { COURT_OWNER = scope:councillor_liege }
+            }
         }
         global_var:votc_action_source = {
             got_minister_position_effect = { MINISTER_TITLE = ${councillorTitleRole} MINISTER_POSITION = ${councillorType} }
         }
     }
-    else = {
+    else_if = {
+        limit = {
+            global_var:votc_action_source = {
+                ${councilEligibilityTrigger} = { COURT_OWNER = scope:councillor_liege }
+            }
+        }
         fire_councillor = cp:${councillorType}
         assign_councillor_type = {
             type = ${councillorType}
@@ -214,12 +235,20 @@ global_var:votc_action_target = {
     if = {
         limit = {
             tgp_has_access_to_ministry_trigger = yes
+            root = {
+                tgp_can_be_a_minister_trigger = { COURT_OWNER = scope:councillor_liege }
+            }
         }
         root = {
             got_minister_position_effect = { MINISTER_TITLE = ${councillorTitleRole} MINISTER_POSITION = ${councillorType} }
         }
     }
-    else = {
+    else_if = {
+        limit = {
+            root = {
+                ${councilEligibilityTrigger} = { COURT_OWNER = scope:councillor_liege }
+            }
+        }
         fire_councillor = cp:${councillorType}
         assign_councillor_type = {
             type = ${councillorType}

@@ -32,7 +32,7 @@ module.exports = {
    * @param {Character} params.sourceCharacter
    */
   description: ({ sourceCharacter }) =>
-    `Set an emotion (talk_pose) for a chosen target character. Only affects the target. Target may be source character.`,
+    `Set the target character's VOTC portrait animation pose. This changes the conversation avatar only and does not change CK3 character opinion, traits, stress, or AI state. Target may be source character.`,
 
   /**
    * Only target-based: allow choosing any character as target
