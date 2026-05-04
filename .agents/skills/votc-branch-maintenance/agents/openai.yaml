@@ -1,0 +1,4 @@
+interface:
+  display_name: "VOTC Branch Maintenance"
+  short_description: "Maintain VOTC local branch overlays"
+  default_prompt: "Use $votc-branch-maintenance to refresh main from upstream-main and reapply local-tools."

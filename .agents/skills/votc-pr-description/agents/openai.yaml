@@ -1,0 +1,4 @@
+interface:
+  display_name: "VOTC PR Description"
+  short_description: "Draft PR.md files for VOTC changes"
+  default_prompt: "Use $votc-pr-description to create or update PR.md for the current VOTC change request."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "VOTC Change Request"
+  short_description: "Create VOTC CR branches and docs"
+  default_prompt: "Use $votc-change-request to start a new CR for this VOTC app change."
