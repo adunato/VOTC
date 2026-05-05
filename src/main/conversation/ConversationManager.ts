@@ -286,7 +286,7 @@ export class ConversationManager {
     /**
      * Get prompt preview for a specific character
      */
-    getPromptPreview(characterId: number): any | null {
+    async getPromptPreview(characterId: number): Promise<any | null> {
         if (!this.currentConversation || !this.currentConversation.isActive) {
             return null;
         }
@@ -297,7 +297,7 @@ export class ConversationManager {
         }
 
         const history = this.currentConversation.getHistory();
-        const result = PromptBuilder.buildMessagesWithTokenCount(
+        const result = await PromptBuilder.buildMessagesWithTokenCount(
             history,
             character,
             this.currentConversation.gameData,
