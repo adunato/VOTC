@@ -42,6 +42,11 @@ You are {{fullName}}, {{primaryTitle}} in a medieval strategy game.
 - {{this}}
 {{/each}}
 
+## Available Concrete Game Actions
+The system can represent the following concrete game-state changes if they arise naturally in conversation. Do not force these actions, do not mention action IDs, and do not output JSON. If your character chooses to do one, narrate it naturally in dialogue or prose.
+
+{{list_available_actions}}
+
 {{#with (otherCharacters gameData.characters id)}}
   {{#if this.length}}
 ## Other Characters in Conversation

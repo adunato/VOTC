@@ -1055,7 +1055,7 @@ const setupIpcHandlers = () => {
     return conversationManager.getActiveConversationData();
   });
 
-  ipcMain.handle('conversation:getPromptPreview', (_, { characterId }) => {
+  ipcMain.handle('conversation:getPromptPreview', async (_, { characterId }) => {
     return conversationManager.getPromptPreview(characterId);
   });
 

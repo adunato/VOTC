@@ -116,7 +116,7 @@ export class Conversation {
     }
 
     private async checkAndSummarizeIfNeeded(npc: Character): Promise<void> {
-        const currentMessages = PromptBuilder.buildMessages(
+        const currentMessages = await PromptBuilder.buildMessages(
             this.getHistory().slice(this.lastSummarizedMessageIndex),
             npc, 
             this.gameData,
@@ -224,7 +224,7 @@ export class Conversation {
             // Has to be called after emitUpdate to show placeholder in UI in right time
             await this.checkAndSummarizeIfNeeded(npc);
             
-            const llmMessages = PromptBuilder.buildMessages(
+            const llmMessages = await PromptBuilder.buildMessages(
                 this.getHistory().slice(this.lastSummarizedMessageIndex), 
                 npc, 
                 this.gameData,

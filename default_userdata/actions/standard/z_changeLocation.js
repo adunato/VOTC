@@ -96,7 +96,7 @@ module.exports = {
     {
       name: "location",
       type: "enum",
-      description: `Type of location to move to.`,
+      description: `VOTC scene background to show. This does not move any CK3 character on the map.`,
       required: true,
       options: VALID_LOCATIONS
     },
@@ -107,7 +107,7 @@ module.exports = {
    * @param {Character} params.sourceCharacter
    */
   description: ({ sourceCharacter }) =>
-    `Execute when characters are moving to a new location. Changes the scene background.`,
+    `Execute only when the VOTC conversation scene background should change. This is scene state only and does not move CK3 characters on the map.`,
 
   /**
    * @param {object} params

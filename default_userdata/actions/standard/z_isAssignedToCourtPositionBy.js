@@ -203,8 +203,13 @@ module.exports = {
       if (position === "wet_nurse") {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
     trigger = {
+        can_employ_court_position_type = ${courtPositionType}
         global_var:votc_action_source = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
             is_female = yes
         }
     }
@@ -219,8 +224,13 @@ global_var:votc_action_target = {
       } else if (position === "akolouthos") {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
     trigger = {
+        can_employ_court_position_type = ${courtPositionType}
         global_var:votc_action_source = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
             is_male = yes
         }
     }
@@ -235,6 +245,15 @@ global_var:votc_action_target = {
       } else {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
+    trigger = {
+        can_employ_court_position_type = ${courtPositionType}
+        global_var:votc_action_source = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
+        }
+    }
     revoke_court_position = {
         court_position = ${courtPositionType}
     }
@@ -263,8 +282,13 @@ global_var:votc_action_target = {
       if (position === "wet_nurse") {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
     trigger = {
+        can_employ_court_position_type = ${courtPositionType}
         root = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
             is_female = yes
         }
     }
@@ -279,8 +303,13 @@ global_var:votc_action_target = {
       } else if (position === "akolouthos") {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
     trigger = {
+        can_employ_court_position_type = ${courtPositionType}
         root = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
             is_male = yes
         }
     }
@@ -295,6 +324,15 @@ global_var:votc_action_target = {
       } else {
         runGameEffect(`
 global_var:votc_action_target = {
+    save_scope_as = votc_court_position_liege
+    trigger = {
+        can_employ_court_position_type = ${courtPositionType}
+        root = {
+            NOT = { this = scope:votc_court_position_liege }
+            NOT = { has_court_position = ${courtPositionType} }
+            can_be_employed_as = ${courtPositionType}
+        }
+    }
     revoke_court_position = {
         court_position = ${courtPositionType}
     }

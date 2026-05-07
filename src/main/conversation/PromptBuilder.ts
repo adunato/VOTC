@@ -7,6 +7,7 @@ import { settingsRepository } from "../SettingsRepository";
 import { promptConfigManager } from "./PromptConfigManager";
 import { PromptBlock, PromptSettings } from "../llmProviders/types";
 import { TokenCounter } from "../utils/TokenCounter";
+import { ActionAvailabilityBuilder } from "../actions/ActionAvailabilityBuilder";
 
 export interface PromptBlockWithTokens {
     block: PromptBlock;
@@ -82,21 +83,41 @@ export class PromptBuilder {
     }
 
 
-    static buildMessages(
-        history: Message[], 
-        char: Character, 
+    private static async buildTemplateContext(
+        char: Character,
         gameData: GameData,
         currentSessionSummary?: string
-    ): any[] {
-        const promptSettings = settingsRepository.getPromptSettings();
-        const blocks = promptSettings.blocks || [];
-        const llmMessages: any[] = [];
+    ): Promise<any> {
+        let listAvailableActions = 'No concrete game-state actions are currently available.';
 
-        const context = {
+        try {
+            listAvailableActions = await ActionAvailabilityBuilder.buildListAvailableActionsText(
+                gameData,
+                char,
+                settingsRepository.getLanguage()
+            );
+        } catch (error) {
+            console.error('Failed to build available actions prompt context:', error);
+        }
+
+        return {
             character: char,
             gameData,
             summary: currentSessionSummary,
+            list_available_actions: listAvailableActions,
         };
+    }
+
+    static async buildMessages(
+        history: Message[],
+        char: Character,
+        gameData: GameData,
+        currentSessionSummary?: string
+    ): Promise<any[]> {
+        const promptSettings = settingsRepository.getPromptSettings();
+        const blocks = promptSettings.blocks || [];
+        const llmMessages: any[] = [];
+        const context = await this.buildTemplateContext(char, gameData, currentSessionSummary);
 
         const workingHistory: any[] = history
             .map(m => ({
@@ -347,22 +368,17 @@ static buildFinalSummary(
     /**
      * Build messages with token counting for preview
      */
-    static buildMessagesWithTokenCount(
+    static async buildMessagesWithTokenCount(
         history: Message[],
         char: Character,
         gameData: GameData,
         currentSessionSummary?: string
-    ): PromptPreviewResult {
+    ): Promise<PromptPreviewResult> {
         const promptSettings = settingsRepository.getPromptSettings();
         const blocks = promptSettings.blocks || [];
         const llmMessages: any[] = [];
         const blocksWithTokens: PromptBlockWithTokens[] = [];
-
-        const context = {
-            character: char,
-            gameData,
-            summary: currentSessionSummary,
-        };
+        const context = await this.buildTemplateContext(char, gameData, currentSessionSummary);
 
         const workingHistory: any[] = history
             .map(m => ({

@@ -24,7 +24,7 @@ module.exports = {
      * @param {Character} params.sourceCharacter
      */
     description: ({ sourceCharacter }) =>
-        `Execute when target character is to be undressed (naked). Can target self or another character.`,
+        `Execute when the target character should become visually undressed in CK3/VOTC portraits. Applies CK3's is_naked character flag for one day; visibility still depends on CK3 nudity and portrait rules.`,
 
     /**
      * @param {object} params
@@ -32,12 +32,14 @@ module.exports = {
      * @param {Character} params.sourceCharacter
      */
     check: ({ gameData, sourceCharacter }) => {
-        // Allow undressing self (no target) or any other character
         const allIds = Array.from(gameData.characters.keys());
-        // const validTargets = allIds.filter((id) => id !== sourceCharacter.id);
+        const validTargets = allIds.filter((id) => {
+            const char = gameData.characters.get(id);
+            return char && char.age >= 16;
+        });
         return {
-            canExecute: true,
-            validTargetCharacterIds: allIds
+            canExecute: validTargets.length > 0,
+            validTargetCharacterIds: validTargets
         };
     },
 
@@ -53,7 +55,15 @@ module.exports = {
     run: ({ gameData, sourceCharacter, targetCharacter, runGameEffect, lang = "en" }) => {
         if (!targetCharacter) return;
 
-        // Undress the target character
+        if (targetCharacter.age < 16) {
+            return {
+                message: {
+                    en: `Failed: ${targetCharacter.shortName} is not an adult and cannot be made visually undressed.`
+                },
+                sentiment: 'negative'
+            };
+        }
+
         runGameEffect(`
 global_var:votc_action_target = {
     add_character_flag = {
